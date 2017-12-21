@@ -1,7 +1,5 @@
 import os
 import numpy as np
-import sys
-sys.path.insert(0, '/home/pau/Code/biobank/')
 import Utils
 from models import Train
 
