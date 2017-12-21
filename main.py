@@ -81,12 +81,12 @@ if __name__ == '__main__':
     parser.add_argument('--k',
                         type=int,
                         default=10000,
-                        help='number of snps')
+                        help='number of snps: default 10000')
 
     parser.add_argument('--loci',
                         type=int,
                         default=100,
-                        help='number of causal loci snps')
+                        help='number of causal loci snps: default 100')
 
     parser.add_argument('--model',
                         type=str,
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         ytr_name = "data/y_train_epis_" + str(args.loci) + ".txt"
         ytst_name = "data/y_test_epis_" + str(args.loci) + ".txt"
 
-    C_name = "data/Corr_"+str(args.loci)+".csv"
+    C_name = "data/Corr_"+str(args.loci)+args.model+".csv"
 
     if os.path.exists(ytr_name) and not args.recreation:
         print("Generating phenotype")
