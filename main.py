@@ -13,15 +13,14 @@ def data_rand(k=50000):
 
 
 def syn_data_lin(x_train, x_test, shape, scale, h=0.45):
-    n_p, n_f =  x_train.shape
-
+    n_p, n_f = x_train.shape
     s = np.random.gamma(shape, scale, n_f)
     w = s * np.random.permutation(np.asanyarray([-1, 1]*(n_f/2)))
     w = w/sum(w)
-    s = np.sqrt((1-h)/h*np.dot(x_train,w).std()**2)
-    y_tr = np.dot(x_train, w) + s*np.random.randn(n_p)
-    s = np.sqrt((1-h)/h*np.dot(x_test,w).std()**2)
-    y_tst = np.dot(x_test, w)+s*np.random.randn(x_test.shape[0])
+    ns = np.sqrt((1-h)/h*np.dot(x_train, w).std()**2)
+    y_tr = np.dot(x_train, w) + ns*np.random.randn(n_p)
+    ns = np.sqrt((1-h)/h*np.dot(x_test, w).std()**2)
+    y_tst = np.dot(x_test, w)+ns*np.random.randn(x_test.shape[0])
     return y_tr, y_tst, w
 
 
@@ -96,14 +95,15 @@ if __name__ == '__main__':
                         default=100,
                         help='number of causal loci snps: default 100')
 
-    parser.add_argument('--model',
+    parser.add_argument('--genmodel',
                         type=str,
                         default="linear",
                         help='Phenotype model: linear or epistasia. Default linear')
 
     parser.add_argument('--recreation',
                         type=str2bool,
-                        default=False,
+                        default=False, nargs='?',
+                        const=True,
                         help='force recreation (bool): default False')
 
     parser.add_argument('--shape',
@@ -120,35 +120,46 @@ if __name__ == '__main__':
                         type=float,
                         default=0.45,
                         help='hearability: 0.45')
-
     args = parser.parse_args()
-    if args.model =="linear":
+    if args.genmodel.lower() == "linear":
         ytr_name = "data/y_train_linear_"+str(args.loci)+".txt"
         ytst_name = "data/y_test_linear_"+str(args.loci)+".txt"
-    else:
+        snp_name = "data/snplist_linear_"+str(args.loci)+".txt"
+    elif args.genmodel.lower() == "epistasia":
         ytr_name = "data/y_train_epis_" + str(args.loci) + ".txt"
         ytst_name = "data/y_test_epis_" + str(args.loci) + ".txt"
-
-    C_name = "data/Corr_"+str(args.loci)+args.model+".csv"
+        snp_name = "data/snplist_epis_" + str(args.loci) + ".txt"
+    else:
+        raise argparse.ArgumentTypeError('genmodel: linear or epistasia are only supported.')
+    C_name = "data/Corr_"+str(args.loci)+args.genmodel+".csv"
 
     if os.path.exists(ytr_name) and not args.recreation:
+        print("Reading phenotype data: " + ytr_name)
+        y_tr = np.loadtxt(ytr_name, delimiter=",")
+        y_tst = np.loadtxt(ytst_name, delimiter=",")
+    else:
         print("Generating phenotype")
         x_train, x_test, snp_list = data_rand(k=args.loci)
-        if args.model == "linear":
+        if args.genmodel.lower() == "linear":
             print("Linear model")
             y_tr, y_tst, w = syn_data_lin(x_train, x_test, shape=args.shape, scale=args.scale)
-        else:
+        elif args.genmodel.lower() == "epistasia":
             print("Epistasia model")
-            y_tr, y_tst = syn_data_epis(x_train, x_test, args.loci, shape=args.shape, scale=args.scale)
+            y_tr, y_tst = syn_data_epis(x_train, x_test, shape=args.shape, scale=args.scale)
+        else:
+            raise argparse.ArgumentTypeError('Linear or epistasia are only supported.')
+        print("Saving to: "+ ytr_name)
+        np.savetxt(snp_name,snp_list,delimiter=",")
         np.savetxt(ytr_name, y_tr, delimiter=',')
         np.savetxt(ytst_name, y_tst, delimiter=',')
     if os.path.exists(C_name) and not args.recreation:
-        C = computeCor(y_tr)
-        np.savetxt(C_name, C, delimiter=",")
-    else:
         C = np.loadtxt(C_name, delimiter=",")
+    else:
+        print("Computing GWAS")
+        C = computeCor(y_tr)
+        print("Saving to :" + C_name)
+        np.savetxt(C_name, C, delimiter=",")
 
     xTr, xTst = readGWAS(C, args.k)
     r = Train(xTr, xTst, y_tr, y_tst, args.method)
-
     print("R2 tst: %5.3f." % r)
