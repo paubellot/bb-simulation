@@ -123,21 +123,21 @@ if __name__ == '__main__':
                         help='heritability: 0.45')
     
     parser.add_argument('--id',
-                        type=int,
-                        default=0,
+                        type=str,
+                        default="0",
                         help='id replica')
     args = parser.parse_args()
     if args.genmodel.lower() == "linear":
-        ytr_name = "data/y_train_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
-        ytst_name = "data/y_test_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
-        snp_name = "data/snplist_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
+        ytr_name = "data/y_train_linear_"+str(args.loci)+"_id"+args.id+".txt"
+        ytst_name = "data/y_test_linear_"+str(args.loci)+"_id"+args.id+".txt"
+        snp_name = "data/snplist_linear_"+str(args.loci)+"_id"+args.id+".txt"
     elif args.genmodel.lower() == "epistasia":
-        ytr_name = "data/y_train_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
-        ytst_name = "data/y_test_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
-        snp_name = "data/snplist_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
+        ytr_name = "data/y_train_epis_" + str(args.loci) +"_id"+args.id+ ".txt"
+        ytst_name = "data/y_test_epis_" + str(args.loci) +"_id"+args.id+ ".txt"
+        snp_name = "data/snplist_epis_" + str(args.loci) +"_id"+args.id+ ".txt"
     else:
         raise argparse.ArgumentTypeError('genmodel: linear or epistasia are only supported.')
-    C_name = "data/Corr_"+str(args.loci)+args.genmodel+"_id"+str(args.id)+".csv"
+    C_name = "data/Corr_"+str(args.loci)+args.genmodel+"_id"+args.id+".csv"
     if os.path.exists(ytr_name) and not args.recreation:
         print("Reading phenotype data: " + ytr_name)
         y_tr = np.loadtxt(ytr_name, delimiter=",")
@@ -170,4 +170,4 @@ if __name__ == '__main__':
     print([args,"r2 = "+str(r)])
     fname = "results/out.txt"
     with open(fname, 'a') as fh:
-	fh.write([args,"r2 = "+str(r)+'\n'])
+        fh.write([args,"r2 = "+str(r)+'\n'])
