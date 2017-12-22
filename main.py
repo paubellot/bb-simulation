@@ -2,7 +2,6 @@ import os
 import numpy as np
 import Utils
 from models import Train
-
 fdir = '/home/data/biobank/'
 
 def data_rand(k=50000):
@@ -45,7 +44,7 @@ def syn_data_epis(x_train, x_test,shape,scale,h=0.45):
 
 
 def computeCor(y_tr):
-    from scipy.stats import pearsonr
+    from scipy.stats import linregress
     p = 589028
     l = range(0,p)
     n = p/100
@@ -55,13 +54,14 @@ def computeCor(y_tr):
         print("reading chunk %d" % c)
         (X_train, n_train, p) = Utils.readgbinfile(fdir + 'genosTRN.bin',std=False,snp_list=chunks[c])
         for i in range(0, X_train.shape[1]):
-            result_all.append(pearsonr(X_train[:, i], y_tr))
+            slope, _, _, p_value, _ = linregress(X_train[:, i], y_tr)
+            result_all.append([slope,p_value])
     return  np.asarray(result_all)
 
 
 def readGWAS(C,k):
     C[C != C] = 0
-    snp_list = abs(C[:, 0]).ravel().argsort()[::-1]
+    snp_list = C[:, 1].ravel().argsort()
     snp_list = snp_list[0:k]
     x_train, _, _ = Utils.readgbinfile(fdir + 'genosTRN.bin', snp_list=snp_list, std=False)
     x_test, _, _ = Utils.readgbinfile(fdir + 'genosTST.bin', snp_list=snp_list, std=False)
@@ -75,6 +75,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 if __name__ == '__main__':
     import argparse
@@ -119,20 +120,24 @@ if __name__ == '__main__':
     parser.add_argument('--h2',
                         type=float,
                         default=0.45,
-                        help='hearability: 0.45')
+                        help='heritability: 0.45')
+    
+    parser.add_argument('--id',
+                        type=int,
+                        default=0,
+                        help='id replica')
     args = parser.parse_args()
     if args.genmodel.lower() == "linear":
-        ytr_name = "data/y_train_linear_"+str(args.loci)+".txt"
-        ytst_name = "data/y_test_linear_"+str(args.loci)+".txt"
-        snp_name = "data/snplist_linear_"+str(args.loci)+".txt"
+        ytr_name = "data/y_train_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
+        ytst_name = "data/y_test_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
+        snp_name = "data/snplist_linear_"+str(args.loci)+"_id"+str(args.id)+".txt"
     elif args.genmodel.lower() == "epistasia":
-        ytr_name = "data/y_train_epis_" + str(args.loci) + ".txt"
-        ytst_name = "data/y_test_epis_" + str(args.loci) + ".txt"
-        snp_name = "data/snplist_epis_" + str(args.loci) + ".txt"
+        ytr_name = "data/y_train_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
+        ytst_name = "data/y_test_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
+        snp_name = "data/snplist_epis_" + str(args.loci) +"_id"+str(args.id)+ ".txt"
     else:
         raise argparse.ArgumentTypeError('genmodel: linear or epistasia are only supported.')
-    C_name = "data/Corr_"+str(args.loci)+args.genmodel+".csv"
-
+    C_name = "data/Corr_"+str(args.loci)+args.genmodel+"_id"+str(args.id)+".csv"
     if os.path.exists(ytr_name) and not args.recreation:
         print("Reading phenotype data: " + ytr_name)
         y_tr = np.loadtxt(ytr_name, delimiter=",")
@@ -162,4 +167,7 @@ if __name__ == '__main__':
 
     xTr, xTst = readGWAS(C, args.k)
     r = Train(xTr, xTst, y_tr, y_tst, args.method)
-    print("R2 tst: %5.3f." % r)
+    print([args,"r2 = "+str(r)])
+    fname = "results/out.txt"
+    with open(fname, 'a') as fh:
+	fh.write([args,"r2 = "+str(r)+'\n'])

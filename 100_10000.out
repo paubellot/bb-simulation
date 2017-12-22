@@ -1,0 +1,196 @@
+Using TensorFlow backend.
+/home/miguel/Projects/biobank/biobank/lib/python2.7/site-packages/scipy/stats/stats.py:3003: RuntimeWarning: invalid value encountered in double_scalars
+  r = r_num / r_den
+2017-12-22 06:16:55.584678: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Generating phenotype
+Linear model
+Saving to: data/y_train_linear_100.txt
+Computing GWAS
+reading chunk 0
+reading chunk 1
+reading chunk 2
+reading chunk 3
+reading chunk 4
+reading chunk 5
+reading chunk 6
+reading chunk 7
+reading chunk 8
+reading chunk 9
+reading chunk 10
+reading chunk 11
+reading chunk 12
+reading chunk 13
+reading chunk 14
+reading chunk 15
+reading chunk 16
+reading chunk 17
+reading chunk 18
+reading chunk 19
+reading chunk 20
+reading chunk 21
+reading chunk 22
+reading chunk 23
+reading chunk 24
+reading chunk 25
+reading chunk 26
+reading chunk 27
+reading chunk 28
+reading chunk 29
+reading chunk 30
+reading chunk 31
+reading chunk 32
+reading chunk 33
+reading chunk 34
+reading chunk 35
+reading chunk 36
+reading chunk 37
+reading chunk 38
+reading chunk 39
+reading chunk 40
+reading chunk 41
+reading chunk 42
+reading chunk 43
+reading chunk 44
+reading chunk 45
+reading chunk 46
+reading chunk 47
+reading chunk 48
+reading chunk 49
+reading chunk 50
+reading chunk 51
+reading chunk 52
+reading chunk 53
+reading chunk 54
+reading chunk 55
+reading chunk 56
+reading chunk 57
+reading chunk 58
+reading chunk 59
+reading chunk 60
+reading chunk 61
+reading chunk 62
+reading chunk 63
+reading chunk 64
+reading chunk 65
+reading chunk 66
+reading chunk 67
+reading chunk 68
+reading chunk 69
+reading chunk 70
+reading chunk 71
+reading chunk 72
+reading chunk 73
+reading chunk 74
+reading chunk 75
+reading chunk 76
+reading chunk 77
+reading chunk 78
+reading chunk 79
+reading chunk 80
+reading chunk 81
+reading chunk 82
+reading chunk 83
+reading chunk 84
+reading chunk 85
+reading chunk 86
+reading chunk 87
+reading chunk 88
+reading chunk 89
+reading chunk 90
+reading chunk 91
+reading chunk 92
+reading chunk 93
+reading chunk 94
+reading chunk 95
+reading chunk 96
+reading chunk 97
+reading chunk 98
+reading chunk 99
+reading chunk 100
+Saving to :data/Corr_100linear.csv
+
+Epoch 00004: reducing learning rate to 0.000200000009499.
+
+Epoch 00009: reducing learning rate to 4.00000018999e-05.
+
+Epoch 00022: reducing learning rate to 1e-05.
+Epoch 00045: early stopping
+R2 tst: 0.372.
+
+real	872m23.950s
+user	79m8.597s
+sys	41m24.661s
+Using TensorFlow backend.
+2017-12-22 07:03:12.728235: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00004: reducing learning rate to 0.000200000009499.
+
+Epoch 00011: reducing learning rate to 4.00000018999e-05.
+Epoch 00012: early stopping
+Traceback (most recent call last):
+  File "main.py", line 164, in <module>
+    r = Train(xTr, xTst, y_tr, y_tst, args.method)
+  File "/home/miguel/Projects/biobank/bb-simulation/models.py", line 86, in Train
+    m = ridge(x_train, y_train, v=0)
+  File "/home/miguel/Projects/biobank/bb-simulation/models.py", line 75, in ridge
+    return mode
+NameError: global name 'mode' is not defined
+Using TensorFlow backend.
+2017-12-22 07:27:32.968806: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00007: reducing learning rate to 0.000200000009499.
+Epoch 00008: early stopping
+R2 tst: 0.279.
+Using TensorFlow backend.
+2017-12-22 07:44:21.596991: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00006: reducing learning rate to 0.000200000009499.
+Epoch 00007: early stopping
+R2 tst: 0.295.
+Using TensorFlow backend.
+sim.sh: line 2: 112375 Terminated              python main.py --genmodel linear --loci 100 --k 10000 --method lasso --recreation True
+
+real	153m12.605s
+user	12m35.470s
+sys	9m21.440s
+Using TensorFlow backend.
+2017-12-22 10:29:05.028394: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00005: reducing learning rate to 0.000200000009499.
+
+Epoch 00010: reducing learning rate to 4.00000018999e-05.
+
+Epoch 00024: reducing learning rate to 1e-05.
+Epoch 00029: early stopping
+Traceback (most recent call last):
+  File "main.py", line 164, in <module>
+    else:
+  File "/home/miguel/Projects/biobank/bb-simulation/models.py", line 86, in Train
+    m = ridge(x_train, y_train, v=0)
+  File "/home/miguel/Projects/biobank/bb-simulation/models.py", line 75, in ridge
+    return mode
+NameError: global name 'mode' is not defined
+Using TensorFlow backend.
+2017-12-22 10:54:43.800424: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00007: reducing learning rate to 0.000200000009499.
+Epoch 00008: early stopping
+Command arguments
+Namespace(genmodel='linear', h2=0.45, k=10000, loci=100, method='mlp1', prueba=0, recreation=False, scale=0.25, shape=5)
+R2 tst: 0.005.
+Using TensorFlow backend.
+se: SSE4.1 SSE4.2 AVX AVX2 FMA
+Reading phenotype data: data/y_train_linear_100.txt
+
+Epoch 00004: reducing learning rate to 0.000200000009499.
+
+Epoch 00011: reducing learning rate to 4.00000018999e-05.
+
+Epoch 00015: reducing learning rate to 1e-05.
+Epoch 00016: early stopping
+R2 tst: 0.274.
