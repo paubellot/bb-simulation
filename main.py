@@ -43,20 +43,68 @@ def syn_data_epis(x_train, x_test,shape,scale,h=0.45):
     return ytr, ytst
 
 
+def readgbinfile(binfile, snp_list=None, ind_list=None, std=True, maxval=None):
+#------------------------------------------------------------------------------
+    """ reads genotype bin file into np array
+        Optionally, reads only snps and samples specified in snp_list and ind_list
+        by default (std=True) scales X
+        optionally (maxval=MaxValue) set bounds
+    """
+    import struct
+    nbyte=1
+    f = open(binfile, 'rb')
+    n = int(struct.unpack('1d',f.read(8))[0])
+    p = int(struct.unpack('1d',f.read(8))[0])
+    if (snp_list is None):
+        use_snp = np.ones(p,dtype=bool)
+    else:
+        use_snp = np.zeros(p,dtype=bool)
+        use_snp[snp_list] = True
+    if (ind_list is None):
+        use_ind = np.ones(n,dtype=bool)
+    else:
+        use_ind = np.zeros(n,dtype=bool)
+        use_ind[ind_list] = True
+    # reads all genotypes for ith snp, and append only those needed
+    X=[]
+    for i in range(p):
+        # replace 'c' by 'd' if double precision
+        line = f.read(nbyte*n)
+        if (use_snp[i]):
+            temp = np.array(struct.unpack( str(n)+'b', line)).astype(np.float32)
+            X.append(temp[use_ind])
+    # X should be n x p
+    X = np.array(X).T
+    # optionally scales and set bounds
+    if (std):
+       X = preprocessing.scale(X)
+       if (maxval is not None):
+           X[X > maxval]  = maxval
+           X[X < -maxval] = -maxval
+           X = preprocessing.scale(X,with_std=False)
+    f.close()
+    return X,X.shape[0],X.shape[1]
+
+
 def computeCor(y_tr):
+    from tqdm import tqdm
     from scipy.stats import linregress
-    p = 589028
-    l = range(0,p)
-    n = p/100
-    chunks = [l[i:i + n] for i in range(0, len(l), n)]
+    import struct
+    nbyte = 1
+    f = open(fdir + 'genosTRN.bin', 'rb')
+    n = int(struct.unpack('1d', f.read(8))[0])
+    p = int(struct.unpack('1d', f.read(8))[0])
     result_all = []
-    for c in range(0,len(chunks)):
-        print("reading chunk %d" % c)
-        (X_train, n_train, p) = Utils.readgbinfile(fdir + 'genosTRN.bin',std=False,snp_list=chunks[c])
-        for i in range(0, X_train.shape[1]):
-            slope, _, _, p_value, _ = linregress(X_train[:, i], y_tr)
-            result_all.append([slope,p_value])
-    return  np.asarray(result_all)
+    pbar = tqdm(total=p)
+    for i in range(p):
+        # replace 'c' by 'd' if double precision
+        line = f.read(nbyte * n)
+        temp = np.array(struct.unpack(str(n) + 'b', line)).astype(np.float32)
+        slope, _, _, p_value, _ = linregress(temp, y_tr)
+        result_all.append([slope, p_value])
+        pbar.update(1)
+    pbar.close()
+    return np.asarray(result_all)
 
 
 def readGWAS(C,k):
@@ -75,6 +123,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 
 if __name__ == '__main__':

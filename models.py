@@ -72,7 +72,7 @@ def ridge(x_train,y_train,a=0.005,v=1):
     early_stopping = EarlyStopping(patience=4, verbose=2)
     callbacks=[reduce_lr,early_stopping]
     model.fit(x_train,y_train,callbacks=callbacks,epochs=150,validation_split=0.2,verbose=v)
-    return mode
+    return model
 
 
 def Train(x_train,x_test,y_train,y_test, model):
